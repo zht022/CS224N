@@ -1,0 +1,140 @@
+Since we did not upload models or log files here, we will show brief results of three methods -- window based model, RNN, and GRU. We show parameters of each method, and parts of log files containing loss, confusion matrix, and scores. 
+
+We do not consider these results as the best ones. For window based model, we've tried to train very well with given configs. For RNN, we just fine-tuned the model making it to be better than window based model, and GRU the same. Entity-level F1 scores for 3 models are 0.853, 0.860 and 0.862, comparing the baselines 0.81, 0.85 and 0.85. 
+
+In order to out-performs the baselines, we mainly consider parameters like learning rate, decay rate and decay step. For RNN and GRU, change better network architectures or use LSTM may receive significant progress. 
+
+Window-based:
+
+Config:
+    n_word_features = 2  # Number of features for every word in the input.
+    window_size = 1  # The size of the window to use.
+    n_window_features = (2 * window_size + 1) * n_word_features  # The total number of features used for each window.
+    n_classes = 5
+    dropout = 0.5
+    embed_size = 50
+    hidden_size = 200
+    batch_size = 2048
+    n_epochs = 25
+    lr = 0.002
+    ds = 200
+    dr = 0.9
+    
+100/100 [==============================] - 4s - train loss: 0.0187   (20 / 25 epoch)   
+
+INFO:Evaluating on development data
+26/26 [==============================] - 0s     
+DEBUG:Token-level confusion matrix:
+go\gu   	PER     	ORG     	LOC     	MISC    	O       
+PER     	2955.00 	71.00   	52.00   	19.00   	52.00   
+ORG     	119.00  	1728.00 	79.00   	68.00   	98.00   
+LOC     	31.00   	87.00   	1915.00 	30.00   	31.00   
+MISC    	38.00   	42.00   	35.00   	1051.00 	102.00  
+O       	43.00   	66.00   	17.00   	22.00   	42611.00
+
+DEBUG:Token-level scores:
+label	acc  	prec 	rec  	f1   
+PER  	0.99 	0.93 	0.94 	0.93 
+ORG  	0.99 	0.87 	0.83 	0.85 
+LOC  	0.99 	0.91 	0.91 	0.91 
+MISC 	0.99 	0.88 	0.83 	0.86 
+O    	0.99 	0.99 	1.00 	0.99 
+micro	0.99 	0.98 	0.98 	0.98 
+macro	0.99 	0.92 	0.90 	0.91 
+not-O	0.99 	0.90 	0.89 	0.90 
+
+INFO:Entity level P/R/F1: 0.840/0.867/0.853
+
+############################################################################
+
+RNN:
+
+Config:
+    n_word_features = 2 # Number of features for every word in the input.
+    window_size = 1
+    n_features = (2 * window_size + 1) * n_word_features # Number of features for every word in the input.
+    max_length = 120 # longest sequence to parse
+    n_classes = 5
+    dropout = 0.5
+    embed_size = 50
+    hidden_size = 300
+    batch_size = 64
+    n_epochs = 15
+    max_grad_norm = 10.
+    lr = 0.002
+    ds = 300
+    dr = 0.96
+
+INFO:Epoch 10 out of 15
+220/220 [==============================] - 254s - train loss: 0.0194     
+
+INFO:Evaluating on development data
+51/51 [==============================] - 34s     
+DEBUG:Token-level confusion matrix:
+go\gu   	PER     	ORG     	LOC     	MISC    	O       
+PER     	2942.00 	36.00   	57.00   	19.00   	95.00   
+ORG     	110.00  	1663.00 	74.00   	101.00  	144.00  
+LOC     	21.00   	73.00   	1928.00 	27.00   	45.00   
+MISC    	37.00   	29.00   	34.00   	1056.00 	112.00  
+O       	26.00   	30.00   	14.00   	33.00   	42656.00
+
+DEBUG:Token-level scores:
+label	acc  	prec 	rec  	f1   
+PER  	0.99 	0.94 	0.93 	0.94 
+ORG  	0.99 	0.91 	0.79 	0.85 
+LOC  	0.99 	0.92 	0.92 	0.92 
+MISC 	0.99 	0.85 	0.83 	0.84 
+O    	0.99 	0.99 	1.00 	0.99 
+micro	0.99 	0.98 	0.98 	0.98 
+macro	0.99 	0.92 	0.90 	0.91 
+not-O	0.99 	0.91 	0.88 	0.90 
+
+INFO:Entity level P/R/F1: 0.858/0.861/0.860
+New best score! Saving model in results/rnn/20180319_114205/model.weights
+
+############################################################################
+
+GRU:
+
+Config:
+    n_word_features = 2 # Number of features for every word in the input.
+    window_size = 1
+    n_features = (2 * window_size + 1) * n_word_features # Number of features for every word in the input.
+    max_length = 120 # longest sequence to parse
+    n_classes = 5
+    dropout = 0.5
+    embed_size = 50
+    hidden_size = 300
+    batch_size = 32
+    n_epochs = 15
+    max_grad_norm = 10.
+    lr = 0.0015
+    ds = 300
+    dr = 0.96
+
+INFO:Epoch 10 out of 15
+439/439 [==============================] - 603s - train loss: 0.0109      
+
+INFO:Evaluating on development data
+102/102 [==============================] - 124s     
+DEBUG:Token-level confusion matrix:
+go\gu   	PER     	ORG     	LOC     	MISC    	O       
+PER     	2991.00 	39.00   	34.00   	9.00    	76.00   
+ORG     	114.00  	1735.00 	80.00   	61.00   	102.00  
+LOC     	44.00   	88.00   	1896.00 	27.00   	39.00   
+MISC    	38.00   	65.00   	37.00   	1029.00 	99.00   
+O       	46.00   	58.00   	16.00   	36.00   	42603.00
+
+DEBUG:Token-level scores:
+label	acc  	prec 	rec  	f1   
+PER  	0.99 	0.93 	0.95 	0.94 
+ORG  	0.99 	0.87 	0.83 	0.85 
+LOC  	0.99 	0.92 	0.91 	0.91 
+MISC 	0.99 	0.89 	0.81 	0.85 
+O    	0.99 	0.99 	1.00 	0.99 
+micro	0.99 	0.98 	0.98 	0.98 
+macro	0.99 	0.92 	0.90 	0.91 
+not-O	0.99 	0.91 	0.89 	0.90 
+
+INFO:Entity level P/R/F1: 0.856/0.868/0.862
+INFO:New best score! Saving model in results/gru/20180319_000354/model.weights
